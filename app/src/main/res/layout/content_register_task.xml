@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!--<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"-->
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterTaskFragment">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".RegisterTaskActivity"
+    tools:showIn="@layout/activity_register_task">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="8dp">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Título"/>
+                android:text="Título" />
 
             <EditText
                 android:id="@+id/edt_title"
-                android:inputType="textPersonName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Categoria"/>
+                android:text="Categoria" />
 
             <Spinner
                 android:id="@+id/spn_category"
@@ -39,31 +44,31 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Descrição"/>
+                android:text="Descrição" />
 
             <EditText
                 android:id="@+id/editText3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="6"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine"
+                android:lines="6" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Tags"/>
+                android:text="Tags" />
 
             <Spinner
                 android:id="@+id/spn_tags"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btn_save_task"
-                android:text="Salvar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:text="Salvar" />
 
 
         </LinearLayout>
@@ -71,4 +76,4 @@
 
     </ScrollView>
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>
