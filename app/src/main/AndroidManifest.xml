@@ -19,11 +19,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--<activity android:name=".RegisterTaskActivity"/>-->
-        <activity
-            android:name=".RegisterTaskActivity"
-            android:label="@string/title_activity_register_task"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <!-- <activity android:name=".RegisterTaskActivity"/> -->
+        <activity android:name=".RegisterTaskActivity"></activity>
     </application>
 
 </manifest>

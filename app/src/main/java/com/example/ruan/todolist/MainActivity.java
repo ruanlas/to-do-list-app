@@ -74,13 +74,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
 
             return true;
-        }else if (id == android.R.id.home){
-            FragmentManager fm = getSupportFragmentManager();
-            Fragment fragment = fm.findFragmentById(R.id.fragment_content);
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.remove(fragment);
-            ft.commit();
-            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -93,20 +86,24 @@ public class MainActivity extends AppCompatActivity
         FragmentManager fm = getSupportFragmentManager();
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_list_all_tasks) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_list_concluded_tasks) {
+
+        } else if (id == R.id.nav_list_pending_tasks) {
+
+        } else if (id == R.id.nav_list_task_by_category) {
+
+        } else if (id == R.id.nav_list_task_by_tag) {
+
+        } else if (id == R.id.nav_add_category) {
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.fragment_content, new RegisterCategoryFragment());
             ft.commit();
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_add_tag) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new RegisterTagFragment());
+            ft.commit();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
