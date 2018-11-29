@@ -1,11 +1,37 @@
 package com.example.ruan.todolist.entity;
 
+import com.example.ruan.todolist.repository.TaskRepository;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+@DatabaseTable(tableName = "task", daoClass = TaskRepository.class)
 public class Task {
+
+    @DatabaseField(columnName = "id", generatedId = true)
+    private int id;
+
+    @DatabaseField(columnName = "title")
     private String title;
+
+    @DatabaseField(columnName = "description")
     private String description;
+
+    @DatabaseField(columnName = "category_id", foreign = true)
     private Category category;
+
+    @DatabaseField(columnName = "tag_id", foreign = true)
     private Tags tags;
+
+    @DatabaseField(columnName = "status_id", foreign = true)
     private Status status;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Category getCategory() {
         return category;
