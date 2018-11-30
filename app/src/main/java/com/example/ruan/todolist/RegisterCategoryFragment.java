@@ -7,6 +7,15 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Category;
+import com.example.ruan.todolist.repository.CategoryRepository;
+
+import java.sql.SQLException;
 
 
 /**
@@ -17,7 +26,7 @@ import android.view.ViewGroup;
  * Use the {@link RegisterCategoryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterCategoryFragment extends Fragment {
+public class RegisterCategoryFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +35,10 @@ public class RegisterCategoryFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private ToDoListDBHelper toDoListDBHelper;
+    private CategoryRepository categoryRepository;
+    private EditText edt_category;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +77,19 @@ public class RegisterCategoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register_category, container, false);
+        View view = inflater.inflate(R.layout.fragment_register_category, container, false);
+
+        toDoListDBHelper = new ToDoListDBHelper(view.getContext());
+        try {
+            categoryRepository = new CategoryRepository(toDoListDBHelper.getConnectionSource());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        edt_category = (EditText)view.findViewById(R.id.edt_category);
+        Button btn_save_category = (Button)view.findViewById(R.id.btn_save_category);
+        btn_save_category.setOnClickListener(this);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -89,6 +114,22 @@ public class RegisterCategoryFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Category category = new Category();
+        category.setCategoryName(
+                edt_category.getText().toString()
+        );
+
+        try {
+            categoryRepository.create(category);
+            Toast.makeText(v.getContext(), "Cadastrado!", Toast.LENGTH_SHORT)
+                    .show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

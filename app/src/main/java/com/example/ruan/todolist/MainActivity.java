@@ -18,13 +18,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Status;
 import com.example.ruan.todolist.interfaces.FragmentsInterface;
+import com.example.ruan.todolist.repository.StatusRepository;
+
+import java.sql.SQLException;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         FragmentsInterface,
         View.OnClickListener{
+
+    ToDoListDBHelper toDoListDBHelper;
+    StatusRepository statusRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +54,8 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        toDoListDBHelper = new ToDoListDBHelper(this);
     }
 
     @Override

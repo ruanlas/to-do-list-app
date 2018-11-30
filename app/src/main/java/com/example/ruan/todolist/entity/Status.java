@@ -16,15 +16,17 @@ public class Status {
         return id;
     }
 
-    public void setId(int id) {
+    public Status setId(int id) {
         this.id = id;
+        return this;
     }
 
     public String getStatusName() {
         return statusName;
     }
 
-    public void setStatusName(String statusName) {
+    public Status setStatusName(String statusName) {
         this.statusName = statusName;
+        return this;
     }
 }

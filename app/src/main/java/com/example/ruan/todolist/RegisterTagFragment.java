@@ -4,9 +4,19 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Tags;
+import com.example.ruan.todolist.repository.TagsRepository;
+
+import java.sql.SQLException;
 
 
 /**
@@ -17,7 +27,7 @@ import android.view.ViewGroup;
  * Use the {@link RegisterTagFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterTagFragment extends Fragment {
+public class RegisterTagFragment extends Fragment implements View.OnClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -26,6 +36,10 @@ public class RegisterTagFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private ToDoListDBHelper toDoListDBHelper;
+    private TagsRepository tagsRepository;
+    private EditText edt_tag;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +78,19 @@ public class RegisterTagFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_register_tag, container, false);
+        View view = inflater.inflate(R.layout.fragment_register_tag, container, false);
+
+        toDoListDBHelper = new ToDoListDBHelper(view.getContext());
+        try {
+            tagsRepository = new TagsRepository(toDoListDBHelper.getConnectionSource());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        edt_tag = (EditText)view.findViewById(R.id.edt_tag);
+        Button btn_save_tag = (Button)view.findViewById(R.id.btn_save_tag);
+        btn_save_tag.setOnClickListener(this);
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -89,6 +115,21 @@ public class RegisterTagFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Tags tags = new Tags();
+        tags.setTagName(
+                edt_tag.getText().toString()
+        );
+        try {
+            tagsRepository.create(tags);
+            Toast.makeText(v.getContext(), "Cadastrado!", Toast.LENGTH_SHORT)
+                    .show();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

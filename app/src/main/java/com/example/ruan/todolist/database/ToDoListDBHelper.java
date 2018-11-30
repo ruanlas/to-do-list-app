@@ -15,7 +15,7 @@ import java.sql.SQLException;
 
 public class ToDoListDBHelper extends OrmLiteSqliteOpenHelper {
 
-    private static final String DATABASE_NAME = "to_do_db";
+    private static final String DATABASE_NAME = "to_do_list_db";
     private static final int DATABASE_VERSION = 1;
 
     public ToDoListDBHelper(Context context){
@@ -29,6 +29,8 @@ public class ToDoListDBHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, Tags.class);
             TableUtils.createTable(connectionSource, Status.class);
             TableUtils.createTable(connectionSource, Task.class);
+
+            PopulateDbHelper.loadStatusTable(database);
         } catch (SQLException e){
             throw new RuntimeException(e);
         }
