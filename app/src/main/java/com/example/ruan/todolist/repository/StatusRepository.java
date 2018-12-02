@@ -13,4 +13,9 @@ public class StatusRepository extends BaseDaoImpl<Status, Integer> {
         setConnectionSource(connectionSource);
         initialize();
     }
+
+    public Status getStatusPending() throws SQLException{
+        Integer integer = 2;
+        return this.queryForId(integer);
+    }
 }

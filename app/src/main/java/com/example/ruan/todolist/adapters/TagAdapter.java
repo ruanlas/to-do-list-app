@@ -10,22 +10,22 @@ import android.widget.CheckedTextView;
 import android.widget.TextView;
 
 import com.example.ruan.todolist.R;
-import com.example.ruan.todolist.entity.Category;
+import com.example.ruan.todolist.entity.Tags;
 
 import java.util.List;
 
-public class CategoryAdapter extends ArrayAdapter<Category> {
+public class TagAdapter extends ArrayAdapter<Tags> {
 
     private Context context;
     private int layoutResourceId;
-    private List<Category> categoryList;
+    private List<Tags> tagsList;
 
-    public CategoryAdapter(Context context, int layoutResourceId, List<Category> categoryList){
-        super(context, layoutResourceId, categoryList);
+    public TagAdapter(Context context, int layoutResourceId, List<Tags> tagsList) {
+        super(context, layoutResourceId, tagsList);
 
         this.context = context;
         this.layoutResourceId = layoutResourceId;
-        this.categoryList = categoryList;
+        this.tagsList = tagsList;
     }
 
     @Override
@@ -44,12 +44,12 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
             LayoutInflater layoutInflater = ((Activity)context).getLayoutInflater();
             convertView = layoutInflater.inflate(this.layoutResourceId, parent, false);
             itensHolder = new ItensHolder();
-            itensHolder.textView = (CheckedTextView) convertView.findViewById(R.id.txt_category_name);
+            itensHolder.textView = (CheckedTextView) convertView.findViewById(R.id.txt_tag_name);
             convertView.setTag(itensHolder);
         }else {
             itensHolder = (ItensHolder)convertView.getTag();
         }
-        itensHolder.textView.setText(categoryList.get(position).getCategoryName());
+        itensHolder.textView.setText(tagsList.get(position).getTagName());
         return convertView;
     }
 

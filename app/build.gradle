@@ -31,4 +31,8 @@ dependencies {
     //dependencias do projeto (libs externas)
     implementation 'com.j256.ormlite:ormlite-android:4.48' // ORMLite
 
+    implementation 'com.github.pratikbutani:MultiSelectSpinner:08d324c98' // Spinner MultipleFilter url: [ https://github.com/pratikbutani/MultiSelectSpinner ]
+
+//    implementation 'com.thomashaertel:multispinner:0.1.0@aar' //MultiSpinner url: [ https://android-arsenal.com/details/1/1839 ]
+
 }
