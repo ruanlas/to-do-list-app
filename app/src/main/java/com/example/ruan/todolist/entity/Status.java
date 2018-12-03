@@ -1,9 +1,10 @@
 package com.example.ruan.todolist.entity;
 
+import com.example.ruan.todolist.repository.StatusRepository;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "status", daoClass = Status.class)
+@DatabaseTable(tableName = "status", daoClass = StatusRepository.class)
 public class Status {
 
     @DatabaseField(columnName = "id", generatedId = true)

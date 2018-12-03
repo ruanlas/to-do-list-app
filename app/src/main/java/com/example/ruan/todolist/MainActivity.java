@@ -99,15 +99,25 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_list_all_tasks) {
-            // Handle the camera action
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new ListAllTasksFragment());
+            ft.commit();
         } else if (id == R.id.nav_list_concluded_tasks) {
-
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new ListAllTasksFragment());
+            ft.commit();
         } else if (id == R.id.nav_list_pending_tasks) {
-
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new ListPendingTasksFragment());
+            ft.commit();
         } else if (id == R.id.nav_list_task_by_category) {
-
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new ListTaskByCategoryFragment());
+            ft.commit();
         } else if (id == R.id.nav_list_task_by_tag) {
-
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.fragment_content, new ListTaskByTagFragment());
+            ft.commit();
         } else if (id == R.id.nav_add_category) {
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.fragment_content, new RegisterCategoryFragment());

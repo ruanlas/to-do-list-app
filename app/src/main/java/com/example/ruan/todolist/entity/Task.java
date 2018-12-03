@@ -16,13 +16,13 @@ public class Task {
     @DatabaseField(columnName = "description")
     private String description;
 
-    @DatabaseField(columnName = "category_id", foreign = true)
+    @DatabaseField(columnName = "category_id", foreign = true, foreignAutoRefresh = true)
     private Category category;
 
-    @DatabaseField(columnName = "tag_id", foreign = true)
+    @DatabaseField(columnName = "tag_id", foreign = true, foreignAutoRefresh = true)
     private Tags tags;
 
-    @DatabaseField(columnName = "status_id", foreign = true)
+    @DatabaseField(columnName = "status_id", foreign = true, foreignAutoRefresh = true)
     private Status status;
 
     public int getId() {

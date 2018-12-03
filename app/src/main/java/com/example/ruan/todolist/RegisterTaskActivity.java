@@ -126,6 +126,7 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
         task.setTags(tags);
         task.setCategory(category);
 
+
         try {
             taskRepository.create(task);
             Toast.makeText(this, "Task salva!", Toast.LENGTH_SHORT)

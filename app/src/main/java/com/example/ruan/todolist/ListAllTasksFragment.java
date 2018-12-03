@@ -7,6 +7,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import com.example.ruan.todolist.adapters.TaskAdapter;
+import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.repository.TaskRepository;
+
+import java.sql.SQLException;
+import java.util.List;
 
 
 /**
@@ -26,6 +36,10 @@ public class ListAllTasksFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private ToDoListDBHelper toDoListDBHelper;
+    private TaskRepository taskRepository;
+    private ListView lst_view_all_tasks;
 
     private OnFragmentInteractionListener mListener;
 
@@ -64,7 +78,30 @@ public class ListAllTasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list_all_tasks, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_all_tasks, container, false);
+        lst_view_all_tasks = (ListView)view.findViewById(R.id.lst_view_all_tasks);
+        toDoListDBHelper = new ToDoListDBHelper(view.getContext());
+        try {
+            taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
+            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
+                .show();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        List<Task> taskList = null;
+        try {
+            taskList = taskRepository.queryForAll();
+            if (taskList != null){
+                TaskAdapter taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
+                lst_view_all_tasks.setAdapter(taskAdapter);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
