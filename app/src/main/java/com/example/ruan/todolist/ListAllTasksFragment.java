@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,7 +28,7 @@ import java.util.List;
  * Use the {@link ListAllTasksFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListAllTasksFragment extends Fragment {
+public class ListAllTasksFragment extends Fragment implements AdapterView.OnItemClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -40,6 +41,7 @@ public class ListAllTasksFragment extends Fragment {
     private ToDoListDBHelper toDoListDBHelper;
     private TaskRepository taskRepository;
     private ListView lst_view_all_tasks;
+    private TaskAdapter taskAdapter;
 
     private OnFragmentInteractionListener mListener;
 
@@ -94,12 +96,14 @@ public class ListAllTasksFragment extends Fragment {
         try {
             taskList = taskRepository.queryForAll();
             if (taskList != null){
-                TaskAdapter taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
+//                TaskAdapter taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
+                taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
                 lst_view_all_tasks.setAdapter(taskAdapter);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        lst_view_all_tasks.setOnItemClickListener(this);
 
         return view;
     }
@@ -126,6 +130,13 @@ public class ListAllTasksFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Task task = taskAdapter.getItem(position);
+        Toast.makeText(view.getContext(), task.getTitle(), Toast.LENGTH_SHORT)
+                .show();
     }
 
     /**
