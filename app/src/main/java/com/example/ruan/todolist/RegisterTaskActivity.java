@@ -76,6 +76,15 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
+        Bundle bundle = getIntent().getExtras();
+
+        if  ( (bundle != null) && (bundle.containsKey("task")) ){
+            Task task = (Task)bundle.getSerializable("task");
+            Toast.makeText(this, task.getTitle(), Toast.LENGTH_SHORT)
+                    .show();
+        }
     }
 
     @Override

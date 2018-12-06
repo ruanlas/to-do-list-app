@@ -1,9 +1,11 @@
 package com.example.ruan.todolist;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,8 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
     private TaskRepository taskRepository;
     private ListView lst_view_all_tasks;
     private TaskAdapter taskAdapter;
+
+    private Context context;
 
     private OnFragmentInteractionListener mListener;
 
@@ -82,11 +86,13 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_all_tasks, container, false);
         lst_view_all_tasks = (ListView)view.findViewById(R.id.lst_view_all_tasks);
-        toDoListDBHelper = new ToDoListDBHelper(view.getContext());
+//        context = view.getContext();
+        context = container.getContext();
+        toDoListDBHelper = new ToDoListDBHelper(context);
         try {
             taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
-            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
-                .show();
+//            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
+//                .show();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,7 +103,7 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
             taskList = taskRepository.queryForAll();
             if (taskList != null){
 //                TaskAdapter taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
-                taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
+                taskAdapter = new TaskAdapter(context, R.layout.task_list_view_layout, taskList);
                 lst_view_all_tasks.setAdapter(taskAdapter);
             }
         } catch (SQLException e) {
@@ -135,6 +141,11 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Task task = taskAdapter.getItem(position);
+
+//        Intent intent = new Intent(context, RegisterTaskActivity.class);
+//        intent.putExtra("task", task);
+//        ((AppCompatActivity)context).startActivityForResult(intent, 0);
+
         Toast.makeText(view.getContext(), task.getTitle(), Toast.LENGTH_SHORT)
                 .show();
     }

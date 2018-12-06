@@ -4,8 +4,10 @@ import com.example.ruan.todolist.repository.TaskRepository;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.io.Serializable;
+
 @DatabaseTable(tableName = "task", daoClass = TaskRepository.class)
-public class Task {
+public class Task implements Serializable {
 
     @DatabaseField(columnName = "id", generatedId = true)
     private int id;
