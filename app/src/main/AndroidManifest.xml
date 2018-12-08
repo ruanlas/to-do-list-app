@@ -20,7 +20,9 @@
             </intent-filter>
         </activity>
         <!-- <activity android:name=".RegisterTaskActivity"/> -->
-        <activity android:name=".RegisterTaskActivity"></activity>
+        <activity android:name=".RegisterTaskActivity" />
+        <activity android:name=".RegisterTagActivity" />
+        <activity android:name=".RegisterCategoryActivity"></activity>
     </application>
 
 </manifest>

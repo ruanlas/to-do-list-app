@@ -19,13 +19,13 @@ public class Task implements Serializable {
     private String description;
 
     @DatabaseField(columnName = "category_id", foreign = true, foreignAutoRefresh = true)
-    private Category category;
+    private transient Category category;
 
     @DatabaseField(columnName = "tag_id", foreign = true, foreignAutoRefresh = true)
-    private Tags tags;
+    private transient Tags tags;
 
     @DatabaseField(columnName = "status_id", foreign = true, foreignAutoRefresh = true)
-    private Status status;
+    private transient Status status;
 
     public int getId() {
         return id;
