@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
 import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
 import com.example.ruan.todolist.repository.StatusRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
@@ -29,7 +31,7 @@ import java.util.List;
  * Use the {@link ListAllTasksFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListAllTasksFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class ListAllTasksFragment extends Fragment implements AdapterView.OnItemClickListener, FragmentRefreshInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -96,6 +98,12 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
             e.printStackTrace();
         }
 
+        this.loadListView();
+
+        return view;
+    }
+
+    private void loadListView(){
         List<Task> taskList = null;
         try {
             taskList = taskRepository.queryForAll();
@@ -107,8 +115,6 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -133,6 +139,11 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void refresh() {
+        this.loadListView();
     }
 
     /**

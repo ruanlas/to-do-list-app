@@ -3,7 +3,9 @@ package com.example.ruan.todolist;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
@@ -15,8 +17,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
 import com.example.ruan.todolist.interfaces.FragmentsInterface;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -124,7 +130,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 
     @Override
@@ -142,4 +147,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+//        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 0){
+            FragmentRefreshInterface currentFragment = (FragmentRefreshInterface)fragmentManager.findFragmentById(R.id.fragment_content);
+            currentFragment.refresh();
+        }
+    }
 }

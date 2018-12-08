@@ -15,6 +15,7 @@ import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
 import com.example.ruan.todolist.entity.Status;
 import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
 import com.example.ruan.todolist.repository.StatusRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
@@ -30,7 +31,7 @@ import java.util.List;
  * Use the {@link ListPendingTasksFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListPendingTasksFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class ListPendingTasksFragment extends Fragment implements AdapterView.OnItemClickListener, FragmentRefreshInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -91,6 +92,7 @@ public class ListPendingTasksFragment extends Fragment implements AdapterView.On
         toDoListDBHelper = new ToDoListDBHelper(getContext());
         try {
             taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
+            statusRepository = new StatusRepository(toDoListDBHelper.getConnectionSource());
 //            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
 //                .show();
 
@@ -98,9 +100,14 @@ public class ListPendingTasksFragment extends Fragment implements AdapterView.On
             e.printStackTrace();
         }
 
+        this.loadListView();
+
+        return view;
+    }
+
+    private void loadListView(){
         List<Task> taskList = null;
         try {
-            statusRepository = new StatusRepository(toDoListDBHelper.getConnectionSource());
             Status status = statusRepository.getStatusPending();
             taskList = taskRepository.getTasksByStatus(status);
             if (taskList != null){
@@ -111,8 +118,6 @@ public class ListPendingTasksFragment extends Fragment implements AdapterView.On
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -137,6 +142,11 @@ public class ListPendingTasksFragment extends Fragment implements AdapterView.On
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void refresh() {
+        this.loadListView();
     }
 
     /**

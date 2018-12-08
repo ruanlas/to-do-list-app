@@ -21,6 +21,7 @@ import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
 import com.example.ruan.todolist.entity.Tags;
 import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
 import com.example.ruan.todolist.menu.MenuActionsItem;
 import com.example.ruan.todolist.repository.TagsRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
@@ -37,7 +38,7 @@ import java.util.List;
  * Use the {@link ListTasksByTagFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListTasksByTagFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
+public class ListTasksByTagFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener, FragmentRefreshInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -103,7 +104,11 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
         try {
             tagsRepository = new TagsRepository(toDoListDBHelper.getConnectionSource());
             taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
+        try {
             List<Tags> tagsList = tagsRepository.queryForAll();
             TagAdapter tagAdapter = new TagAdapter(getContext(), R.layout.tag_spinner_layout, tagsList);
             spn_tag_filter.setAdapter(tagAdapter);
@@ -136,6 +141,11 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void refresh() {
+        loadListView();
     }
 
     /**
@@ -171,19 +181,23 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
 
         switch (viewElementId){
             case R.id.spn_tag_filter:
-                Tags tag = (Tags)spn_tag_filter.getSelectedItem();
-                try {
-                    List<Task> taskList = taskRepository.getTasksByTag(tag);
-                    taskAdapter = new TaskAdapter(getContext(), R.layout.task_list_view_layout, taskList);
-                    lst_view_tasks_by_tag.setAdapter(taskAdapter);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
+                this.loadListView();
 //                Toast.makeText(view.getContext(), tag.getTagName(), Toast.LENGTH_SHORT)
 //                    .show();
                 break;
             default:
                 break;
+        }
+    }
+
+    private void loadListView(){
+        Tags tag = (Tags)spn_tag_filter.getSelectedItem();
+        try {
+            List<Task> taskList = taskRepository.getTasksByTag(tag);
+            taskAdapter = new TaskAdapter(getContext(), R.layout.task_list_view_layout, taskList);
+            lst_view_tasks_by_tag.setAdapter(taskAdapter);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -202,8 +216,8 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
 
                 menu.add(0, MenuActionsItem.ACTION_EDIT_ID, 0, MenuActionsItem.ACTION_EDIT);
                 menu.add(0, MenuActionsItem.ACTION_REMOVE_ID, 0, MenuActionsItem.ACTION_REMOVE);
-                menu.add(0, MenuActionsItem.ACTION_SET_CONCLUDED_ID, 0, MenuActionsItem.ACTION_SET_CONCLUDED);
-                menu.add(0, MenuActionsItem.ACTION_SET_PENDING_ID, 0, MenuActionsItem.ACTION_SET_PENDING);
+                menu.add(0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID, 0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED);
+                menu.add(0, MenuActionsItem.ACTION_SET_STATUS_PENDING_ID, 0, MenuActionsItem.ACTION_SET_STATUS_PENDING);
 //                Toast.makeText(getContext(), "Fui pressionado por um logo tempo", Toast.LENGTH_SHORT)
 //                    .show();
                 break;
@@ -229,10 +243,10 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
             case MenuActionsItem.ACTION_REMOVE_ID:
 
                 break;
-            case MenuActionsItem.ACTION_SET_CONCLUDED_ID:
+            case MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID:
 
                 break;
-            case MenuActionsItem.ACTION_SET_PENDING_ID:
+            case MenuActionsItem.ACTION_SET_STATUS_PENDING_ID:
 
                 break;
             default:
