@@ -28,4 +28,11 @@ public class Tags {
     public void setTagName(String tagName) {
         this.tagName = tagName;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+//        return super.equals(obj);
+        Tags tags = (Tags)obj;
+        return (this.getId() == tags.getId());
+    }
 }

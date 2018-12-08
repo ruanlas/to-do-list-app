@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.androidbuts.multispinnerfilter.MultiSpinner;
@@ -40,6 +41,8 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
     private TagsRepository tagsRepository;
     private TaskRepository taskRepository;
     private StatusRepository statusRepository;
+    private boolean newTask;
+    private Task task;
 
 
     @Override
@@ -77,20 +80,38 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
             e.printStackTrace();
         }
 
+        newTask = this.verifyIfIsNewTask();
+        if (!newTask){
+            this.loadFieldsToEdited();
+        }
 
+    }
+
+    private boolean verifyIfIsNewTask(){
         Bundle bundle = getIntent().getExtras();
+        return !( (bundle != null) && (bundle.containsKey("task")) );
+    }
 
-        if  ( (bundle != null) && (bundle.containsKey("task")) ){
-            Task task = (Task)bundle.getSerializable("task");
-            try {
-                task = taskRepository.queryForSameId(task);
-                Toast.makeText(this, task.getTitle() + "| status: " + task.getStatus().getStatusName(), Toast.LENGTH_SHORT)
-                        .show();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+    private void loadFieldsToEdited(){
+        Bundle bundle = getIntent().getExtras();
+        task = (Task)bundle.getSerializable("task");
+        try {
+            task = taskRepository.queryForSameId(task);
 //            Toast.makeText(this, task.getTitle() + "| status: " + task.getStatus().getStatusName(), Toast.LENGTH_SHORT)
 //                    .show();
+            edt_title.setText(task.getTitle());
+            edt_description.setText(task.getDescription());
+
+            CategoryAdapter categoryAdapter = (CategoryAdapter) spn_category.getAdapter();
+            int positionCategory = categoryAdapter.getPosition(task.getCategory());
+            spn_category.setSelection(positionCategory);
+
+            TagAdapter tagAdapter = (TagAdapter)spn_tags.getAdapter();
+            int positionTag = tagAdapter.getPosition(task.getTags());
+            spn_tags.setSelection(positionTag);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -126,15 +147,17 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void saveTask(){
-        Task task = new Task();
-        Status statusPending = null;
+        if (newTask){
+            task = new Task();
+            Status statusPending = null;
 
-        try {
-            statusPending = statusRepository.getStatusPending();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            try {
+                statusPending = statusRepository.getStatusPending();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            task.setStatus(statusPending);
         }
-        task.setStatus(statusPending);
         Tags tags = (Tags)spn_tags.getSelectedItem();
         Category category = (Category)spn_category.getSelectedItem();
         task.setTitle(edt_title.getText().toString());
@@ -144,7 +167,11 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
 
 
         try {
-            taskRepository.create(task);
+            if (newTask){
+                taskRepository.create(task);
+            }else {
+                taskRepository.update(task);
+            }
             Toast.makeText(this, "Task salva!", Toast.LENGTH_SHORT)
                 .show();
         } catch (SQLException e) {

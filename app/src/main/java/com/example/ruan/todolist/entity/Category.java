@@ -28,4 +28,11 @@ public class Category {
     public void setCategoryName(String categoryName) {
         this.categoryName = categoryName;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+//        return super.equals(obj);
+        Category category = (Category)obj;
+        return (category.getId() == this.getId());
+    }
 }
