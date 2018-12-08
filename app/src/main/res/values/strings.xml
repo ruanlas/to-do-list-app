@@ -13,4 +13,5 @@
     <string name="title_activity_register_task">RegisterTaskActivity</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_register_task2">RegisterTaskActivity2</string>
+    <string name="lbl_filter_by_tag">Filtrar pela tag</string>
 </resources>

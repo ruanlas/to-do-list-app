@@ -7,14 +7,11 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
     tools:showIn="@layout/app_bar_main">
-    <!--<FrameLayout-->
-        <!--android:id="@+id/fragment_content"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent">-->
 
-    <!--</FrameLayout>-->
-    <ListView
-        android:id="@+id/lst_view_all_tasks"
+    <FrameLayout
+        android:id="@+id/fragment_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

@@ -1,32 +1,36 @@
 package com.example.ruan.todolist;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
+import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
-import com.example.ruan.todolist.entity.Category;
-import com.example.ruan.todolist.repository.CategoryRepository;
+import com.example.ruan.todolist.entity.Status;
+import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.repository.StatusRepository;
+import com.example.ruan.todolist.repository.TaskRepository;
 
 import java.sql.SQLException;
+import java.util.List;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RegisterCategoryFragment.OnFragmentInteractionListener} interface
+ * {@link ListPendingTasksFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link RegisterCategoryFragment#newInstance} factory method to
+ * Use the {@link ListPendingTasksFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class RegisterCategoryFragment extends Fragment implements View.OnClickListener{
+public class ListPendingTasksFragment extends Fragment implements AdapterView.OnItemClickListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -37,12 +41,14 @@ public class RegisterCategoryFragment extends Fragment implements View.OnClickLi
     private String mParam2;
 
     private ToDoListDBHelper toDoListDBHelper;
-    private CategoryRepository categoryRepository;
-    private EditText edt_category;
+    private TaskRepository taskRepository;
+    private StatusRepository statusRepository;
+    private ListView lst_view_pending_tasks;
+    private TaskAdapter taskAdapter;
 
     private OnFragmentInteractionListener mListener;
 
-    public RegisterCategoryFragment() {
+    public ListPendingTasksFragment() {
         // Required empty public constructor
     }
 
@@ -52,11 +58,11 @@ public class RegisterCategoryFragment extends Fragment implements View.OnClickLi
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment RegisterCategoryFragment.
+     * @return A new instance of fragment ListPendingTasksFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static RegisterCategoryFragment newInstance(String param1, String param2) {
-        RegisterCategoryFragment fragment = new RegisterCategoryFragment();
+    public static ListPendingTasksFragment newInstance(String param1, String param2) {
+        ListPendingTasksFragment fragment = new ListPendingTasksFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -77,17 +83,34 @@ public class RegisterCategoryFragment extends Fragment implements View.OnClickLi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_register_category, container, false);
+        View view = inflater.inflate(R.layout.fragment_list_pending_tasks, container, false);
 
-        toDoListDBHelper = new ToDoListDBHelper(view.getContext());
+        lst_view_pending_tasks = (ListView)view.findViewById(R.id.lst_view_pending_tasks);
+        lst_view_pending_tasks.setOnItemClickListener(this);
+
+        toDoListDBHelper = new ToDoListDBHelper(getContext());
         try {
-            categoryRepository = new CategoryRepository(toDoListDBHelper.getConnectionSource());
+            taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
+//            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
+//                .show();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        edt_category = (EditText)view.findViewById(R.id.edt_category);
-        Button btn_save_category = (Button)view.findViewById(R.id.btn_save_category);
-        btn_save_category.setOnClickListener(this);
+
+        List<Task> taskList = null;
+        try {
+            statusRepository = new StatusRepository(toDoListDBHelper.getConnectionSource());
+            Status status = statusRepository.getStatusPending();
+            taskList = taskRepository.getTasksByStatus(status);
+            if (taskList != null){
+//                TaskAdapter taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
+                taskAdapter = new TaskAdapter(getContext(), R.layout.task_list_view_layout, taskList);
+                lst_view_pending_tasks.setAdapter(taskAdapter);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return view;
     }
@@ -116,22 +139,6 @@ public class RegisterCategoryFragment extends Fragment implements View.OnClickLi
         mListener = null;
     }
 
-    @Override
-    public void onClick(View v) {
-        Category category = new Category();
-        category.setCategoryName(
-                edt_category.getText().toString()
-        );
-
-        try {
-            categoryRepository.create(category);
-            Toast.makeText(v.getContext(), "Cadastrado!", Toast.LENGTH_SHORT)
-                    .show();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -145,5 +152,17 @@ public class RegisterCategoryFragment extends Fragment implements View.OnClickLi
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Task task = taskAdapter.getItem(position);
+
+        Intent intent = new Intent(getContext(), RegisterTaskActivity.class);
+        intent.putExtra("task", task);
+//        ((AppCompatActivity)context).startActivityForResult(intent, 0);
+        startActivityForResult(intent, 0);
+//        Toast.makeText(view.getContext(), task.getTitle(), Toast.LENGTH_SHORT)
+//                .show();
     }
 }

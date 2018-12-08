@@ -82,8 +82,15 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
 
         if  ( (bundle != null) && (bundle.containsKey("task")) ){
             Task task = (Task)bundle.getSerializable("task");
-            Toast.makeText(this, task.getTitle(), Toast.LENGTH_SHORT)
-                    .show();
+            try {
+                task = taskRepository.queryForSameId(task);
+                Toast.makeText(this, task.getTitle() + "| status: " + task.getStatus().getStatusName(), Toast.LENGTH_SHORT)
+                        .show();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+//            Toast.makeText(this, task.getTitle() + "| status: " + task.getStatus().getStatusName(), Toast.LENGTH_SHORT)
+//                    .show();
         }
     }
 

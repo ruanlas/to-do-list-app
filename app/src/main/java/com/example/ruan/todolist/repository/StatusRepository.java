@@ -18,4 +18,9 @@ public class StatusRepository extends BaseDaoImpl<Status, Integer> {
         Integer integer = 2;
         return this.queryForId(integer);
     }
+
+    public Status getStatusConcluded() throws SQLException{
+        Integer integer = 1;
+        return this.queryForId(integer);
+    }
 }
