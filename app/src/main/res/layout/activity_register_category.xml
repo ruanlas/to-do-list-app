@@ -19,7 +19,7 @@
 
         <EditText
             android:id="@+id/edt_category"
-            android:inputType="textPersonName"
+            android:inputType="textPersonName|textCapSentences"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
