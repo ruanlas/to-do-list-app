@@ -105,7 +105,7 @@ public class ListTasksByCategoryFragment extends Fragment implements AdapterView
 
         lst_view_tasks_by_category = (ListView)view.findViewById(R.id.lst_view_tasks_by_category);
 //        lst_view_tasks_by_tag.setOnItemClickListener(this);
-        spn_category_filter = (Spinner)view.findViewById(R.id.spn_tag_filter);
+        spn_category_filter = (Spinner)view.findViewById(R.id.spn_category_filter);
         spn_category_filter.setOnItemSelectedListener(this);
         registerForContextMenu(lst_view_tasks_by_category);
 
@@ -239,7 +239,7 @@ public class ListTasksByCategoryFragment extends Fragment implements AdapterView
 
         AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = adapterContextMenuInfo.position;
-        final Task task = taskAdapter.getItem(position);
+        Task task = taskAdapter.getItem(position);
 
         switch (menuItemSelectedId){
             case MenuActionsItem.ACTION_EDIT_ID:

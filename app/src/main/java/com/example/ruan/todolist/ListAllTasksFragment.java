@@ -194,7 +194,7 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
         int elementViewId = v.getId();
 
         switch (elementViewId){
-            case R.id.lst_view_tasks_by_tag:
+            case R.id.lst_view_all_tasks:
 //                ListView listView = (ListView)v;
                 AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
                 Task task = (Task) lst_view_all_tasks.getItemAtPosition(adapterContextMenuInfo.position);
@@ -220,7 +220,7 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
 
         AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = adapterContextMenuInfo.position;
-        final Task task = taskAdapter.getItem(position);
+        Task task = taskAdapter.getItem(position);
 
         switch (menuItemSelectedId){
             case MenuActionsItem.ACTION_EDIT_ID:

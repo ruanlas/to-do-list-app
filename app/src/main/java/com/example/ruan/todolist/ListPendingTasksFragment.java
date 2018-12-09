@@ -194,7 +194,7 @@ public class ListPendingTasksFragment extends Fragment implements AdapterView.On
         int elementViewId = v.getId();
 
         switch (elementViewId){
-            case R.id.lst_view_tasks_by_tag:
+            case R.id.lst_view_pending_tasks:
 //                ListView listView = (ListView)v;
                 AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
                 Task task = (Task) lst_view_pending_tasks.getItemAtPosition(adapterContextMenuInfo.position);
