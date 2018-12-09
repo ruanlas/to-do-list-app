@@ -1,6 +1,8 @@
 package com.example.ruan.todolist;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,10 +21,13 @@ import android.widget.Toast;
 import com.example.ruan.todolist.adapters.TagAdapter;
 import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Status;
 import com.example.ruan.todolist.entity.Tags;
 import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.events.RemoveTaskActionAlertDialog;
 import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
 import com.example.ruan.todolist.menu.MenuActionsItem;
+import com.example.ruan.todolist.repository.StatusRepository;
 import com.example.ruan.todolist.repository.TagsRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
@@ -51,9 +56,13 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
     private ToDoListDBHelper toDoListDBHelper;
     private TaskRepository taskRepository;
     private TagsRepository tagsRepository;
+    private StatusRepository statusRepository;
     private ListView lst_view_tasks_by_tag;
     private Spinner spn_tag_filter;
     private TaskAdapter taskAdapter;
+
+    private Status statusConcluded = null;
+    private Status statusPending = null;
 
     private OnFragmentInteractionListener mListener;
 
@@ -104,6 +113,10 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
         try {
             tagsRepository = new TagsRepository(toDoListDBHelper.getConnectionSource());
             taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
+            statusRepository = new StatusRepository(toDoListDBHelper.getConnectionSource());
+
+            statusConcluded = statusRepository.getStatusConcluded();
+            statusPending = statusRepository.getStatusPending();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -213,11 +226,17 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
 
         switch (elementViewId){
             case R.id.lst_view_tasks_by_tag:
+//                ListView listView = (ListView)v;
+                AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+                Task task = (Task) lst_view_tasks_by_tag.getItemAtPosition(adapterContextMenuInfo.position);
 
                 menu.add(0, MenuActionsItem.ACTION_EDIT_ID, 0, MenuActionsItem.ACTION_EDIT);
                 menu.add(0, MenuActionsItem.ACTION_REMOVE_ID, 0, MenuActionsItem.ACTION_REMOVE);
-                menu.add(0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID, 0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED);
-                menu.add(0, MenuActionsItem.ACTION_SET_STATUS_PENDING_ID, 0, MenuActionsItem.ACTION_SET_STATUS_PENDING);
+                if ( statusPending.equals(task.getStatus()) ){
+                    menu.add(0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID, 0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED);
+                }else {
+                    menu.add(0, MenuActionsItem.ACTION_SET_STATUS_PENDING_ID, 0, MenuActionsItem.ACTION_SET_STATUS_PENDING);
+                }
 //                Toast.makeText(getContext(), "Fui pressionado por um logo tempo", Toast.LENGTH_SHORT)
 //                    .show();
                 break;
@@ -232,7 +251,7 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
 
         AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         int position = adapterContextMenuInfo.position;
-        Task task = taskAdapter.getItem(position);
+        final Task task = taskAdapter.getItem(position);
 
         switch (menuItemSelectedId){
             case MenuActionsItem.ACTION_EDIT_ID:
@@ -241,17 +260,35 @@ public class ListTasksByTagFragment extends Fragment implements AdapterView.OnIt
                 startActivityForResult(intent, 0);
                 break;
             case MenuActionsItem.ACTION_REMOVE_ID:
-
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                alertDialog.setTitle("Atenção");
+                alertDialog.setMessage("Você deseja realmente remover esta task?");
+                alertDialog.setPositiveButton("OK", new RemoveTaskActionAlertDialog(
+                        taskRepository, task, this
+                ));
+                alertDialog.setNegativeButton("Cancelar", null);
+                alertDialog.show();
                 break;
             case MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID:
-
+                task.setStatus(statusConcluded);
+                try {
+                    taskRepository.update(task);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 break;
             case MenuActionsItem.ACTION_SET_STATUS_PENDING_ID:
-
+                task.setStatus(statusPending);
+                try {
+                    taskRepository.update(task);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
                 break;
             default:
                 break;
         }
+        this.loadListView();
 
 //        Toast.makeText(getContext(), " Task: " + task.getTitle(), Toast.LENGTH_SHORT)
 //            .show();

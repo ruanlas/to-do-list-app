@@ -48,6 +48,7 @@ public class RegisterCategoryActivity extends AppCompatActivity implements View.
             categoryRepository.create(category);
             Toast.makeText(v.getContext(), "Cadastrado!", Toast.LENGTH_SHORT)
                     .show();
+            finish();
         } catch (SQLException e) {
             e.printStackTrace();
         }

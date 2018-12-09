@@ -47,6 +47,7 @@ public class RegisterTagActivity extends AppCompatActivity implements View.OnCli
             tagsRepository.create(tags);
             Toast.makeText(v.getContext(), "Cadastrado!", Toast.LENGTH_SHORT)
                     .show();
+            finish();
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -13,15 +13,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Spinner;
 
+import com.example.ruan.todolist.adapters.CategoryAdapter;
+import com.example.ruan.todolist.adapters.TagAdapter;
 import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Category;
 import com.example.ruan.todolist.entity.Status;
+import com.example.ruan.todolist.entity.Tags;
 import com.example.ruan.todolist.entity.Task;
 import com.example.ruan.todolist.events.RemoveTaskActionAlertDialog;
 import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
 import com.example.ruan.todolist.menu.MenuActionsItem;
+import com.example.ruan.todolist.repository.CategoryRepository;
 import com.example.ruan.todolist.repository.StatusRepository;
+import com.example.ruan.todolist.repository.TagsRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
 import java.sql.SQLException;
@@ -31,12 +38,12 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ListConcludedTasksFragment.OnFragmentInteractionListener} interface
+ * {@link ListTasksByCategoryFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ListConcludedTasksFragment#newInstance} factory method to
+ * Use the {@link ListTasksByCategoryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListConcludedTasksFragment extends Fragment implements AdapterView.OnItemClickListener, FragmentRefreshInterface {
+public class ListTasksByCategoryFragment extends Fragment implements AdapterView.OnItemSelectedListener, FragmentRefreshInterface {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -48,8 +55,10 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
 
     private ToDoListDBHelper toDoListDBHelper;
     private TaskRepository taskRepository;
+    private CategoryRepository categoryRepository;
     private StatusRepository statusRepository;
-    private ListView lst_view_concluded_tasks;
+    private ListView lst_view_tasks_by_category;
+    private Spinner spn_category_filter;
     private TaskAdapter taskAdapter;
 
     private Status statusConcluded = null;
@@ -57,7 +66,7 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
 
     private OnFragmentInteractionListener mListener;
 
-    public ListConcludedTasksFragment() {
+    public ListTasksByCategoryFragment() {
         // Required empty public constructor
     }
 
@@ -67,11 +76,11 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ListConcludedTasksFragment.
+     * @return A new instance of fragment ListTasksByCategoryFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ListConcludedTasksFragment newInstance(String param1, String param2) {
-        ListConcludedTasksFragment fragment = new ListConcludedTasksFragment();
+    public static ListTasksByCategoryFragment newInstance(String param1, String param2) {
+        ListTasksByCategoryFragment fragment = new ListTasksByCategoryFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -92,45 +101,35 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_list_tasks_by_category, container, false);
 
-        View view = inflater.inflate(R.layout.fragment_list_concluded_tasks, container, false);
-
-        lst_view_concluded_tasks = (ListView)view.findViewById(R.id.lst_view_concluded_tasks);
-//        lst_view_concluded_tasks.setOnItemClickListener(this);
-        registerForContextMenu(lst_view_concluded_tasks);
+        lst_view_tasks_by_category = (ListView)view.findViewById(R.id.lst_view_tasks_by_category);
+//        lst_view_tasks_by_tag.setOnItemClickListener(this);
+        spn_category_filter = (Spinner)view.findViewById(R.id.spn_tag_filter);
+        spn_category_filter.setOnItemSelectedListener(this);
+        registerForContextMenu(lst_view_tasks_by_category);
 
         toDoListDBHelper = new ToDoListDBHelper(getContext());
         try {
+            categoryRepository = new CategoryRepository(toDoListDBHelper.getConnectionSource());
             taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
             statusRepository = new StatusRepository(toDoListDBHelper.getConnectionSource());
 
             statusConcluded = statusRepository.getStatusConcluded();
             statusPending = statusRepository.getStatusPending();
-//            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
-//                .show();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        this.loadListView();
+        try {
+            List<Category> categoryList = categoryRepository.queryForAll();
+            CategoryAdapter categoryAdapter = new CategoryAdapter(getContext(), R.layout.tag_spinner_layout, categoryList);
+            spn_category_filter.setAdapter(categoryAdapter);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return view;
-    }
-
-    private void loadListView(){
-        List<Task> taskList = null;
-        try {
-            Status status = statusRepository.getStatusConcluded();
-            taskList = taskRepository.getTasksByStatus(status);
-            if (taskList != null){
-//                TaskAdapter taskAdapter = new TaskAdapter(view.getContext(), R.layout.task_list_view_layout, taskList);
-                taskAdapter = new TaskAdapter(getContext(), R.layout.task_list_view_layout, taskList);
-                lst_view_concluded_tasks.setAdapter(taskAdapter);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -138,6 +137,11 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
         }
+    }
+
+    @Override
+    public void refresh() {
+
     }
 
     @Override
@@ -157,11 +161,6 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
         mListener = null;
     }
 
-    @Override
-    public void refresh() {
-        this.loadListView();
-    }
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -177,16 +176,35 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
         void onFragmentInteraction(Uri uri);
     }
 
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Task task = taskAdapter.getItem(position);
+    private void loadListView(){
+        Category category = (Category)spn_category_filter.getSelectedItem();
+        try {
+            List<Task> taskList = taskRepository.getTasksByCategory(category);
+            taskAdapter = new TaskAdapter(getContext(), R.layout.task_list_view_layout, taskList);
+            lst_view_tasks_by_category.setAdapter(taskAdapter);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
-        Intent intent = new Intent(getContext(), RegisterTaskActivity.class);
-        intent.putExtra("task", task);
-//        ((AppCompatActivity)context).startActivityForResult(intent, 0);
-        startActivityForResult(intent, 0);
-//        Toast.makeText(view.getContext(), task.getTitle(), Toast.LENGTH_SHORT)
-//                .show();
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        int viewElementId = parent.getId();
+
+        switch (viewElementId){
+            case R.id.spn_category_filter:
+                this.loadListView();
+//                Toast.makeText(view.getContext(), tag.getTagName(), Toast.LENGTH_SHORT)
+//                    .show();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
     }
 
     @Override
@@ -195,10 +213,10 @@ public class ListConcludedTasksFragment extends Fragment implements AdapterView.
         int elementViewId = v.getId();
 
         switch (elementViewId){
-            case R.id.lst_view_tasks_by_tag:
+            case R.id.lst_view_tasks_by_category:
 //                ListView listView = (ListView)v;
                 AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
-                Task task = (Task) lst_view_concluded_tasks.getItemAtPosition(adapterContextMenuInfo.position);
+                Task task = (Task) lst_view_tasks_by_category.getItemAtPosition(adapterContextMenuInfo.position);
 
                 menu.add(0, MenuActionsItem.ACTION_EDIT_ID, 0, MenuActionsItem.ACTION_EDIT);
                 menu.add(0, MenuActionsItem.ACTION_REMOVE_ID, 0, MenuActionsItem.ACTION_REMOVE);

@@ -140,6 +140,7 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
 //                Toast.makeText(v.getContext(), tags.getTagName(), Toast.LENGTH_SHORT)
 //                        .show();
                 saveTask();
+                finish();
                 break;
             default:
                 break;

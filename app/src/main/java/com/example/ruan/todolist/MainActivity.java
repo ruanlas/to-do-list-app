@@ -110,7 +110,9 @@ public class MainActivity extends AppCompatActivity
             fragmentTransaction.replace(R.id.fragment_content, new ListConcludedTasksFragment());
             fragmentTransaction.commit();
         } else if (id == R.id.nav_list_task_by_category) {
-
+            FragmentTransaction fragmentTransaction = this.fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_content, new ListTasksByCategoryFragment());
+            fragmentTransaction.commit();
         } else if (id == R.id.nav_list_task_by_tag) {
             FragmentTransaction fragmentTransaction = this.fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_content, new ListTasksByTagFragment());

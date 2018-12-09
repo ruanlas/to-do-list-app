@@ -30,4 +30,10 @@ public class Status {
         this.statusName = statusName;
         return this;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        Status status = (Status)obj;
+        return (this.getId() == status.getId());
+    }
 }

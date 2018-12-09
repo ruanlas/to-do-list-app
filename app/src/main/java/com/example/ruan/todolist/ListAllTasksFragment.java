@@ -1,11 +1,14 @@
 package com.example.ruan.todolist;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,8 +17,11 @@ import android.widget.Toast;
 
 import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
+import com.example.ruan.todolist.entity.Status;
 import com.example.ruan.todolist.entity.Task;
+import com.example.ruan.todolist.events.RemoveTaskActionAlertDialog;
 import com.example.ruan.todolist.interfaces.FragmentRefreshInterface;
+import com.example.ruan.todolist.menu.MenuActionsItem;
 import com.example.ruan.todolist.repository.StatusRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
@@ -43,8 +49,12 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
 
     private ToDoListDBHelper toDoListDBHelper;
     private TaskRepository taskRepository;
+    private StatusRepository statusRepository;
     private ListView lst_view_all_tasks;
     private TaskAdapter taskAdapter;
+
+    private Status statusConcluded = null;
+    private Status statusPending = null;
 
     private OnFragmentInteractionListener mListener;
 
@@ -86,11 +96,16 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
         View view = inflater.inflate(R.layout.fragment_list_all_tasks, container, false);
 
         lst_view_all_tasks = (ListView)view.findViewById(R.id.lst_view_all_tasks);
-        lst_view_all_tasks.setOnItemClickListener(this);
+//        lst_view_all_tasks.setOnItemClickListener(this);
+        registerForContextMenu(lst_view_all_tasks);
 
         toDoListDBHelper = new ToDoListDBHelper(getContext());
         try {
             taskRepository = new TaskRepository(toDoListDBHelper.getConnectionSource());
+            statusRepository = new StatusRepository(toDoListDBHelper.getConnectionSource());
+
+            statusConcluded = statusRepository.getStatusConcluded();
+            statusPending = statusRepository.getStatusPending();
 //            Toast.makeText(view.getContext(), "Conexão criada!", Toast.LENGTH_SHORT)
 //                .show();
 
@@ -171,5 +186,81 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
         startActivityForResult(intent, 0);
 //        Toast.makeText(view.getContext(), task.getTitle(), Toast.LENGTH_SHORT)
 //                .show();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+//        super.onCreateContextMenu(menu, v, menuInfo);
+        int elementViewId = v.getId();
+
+        switch (elementViewId){
+            case R.id.lst_view_tasks_by_tag:
+//                ListView listView = (ListView)v;
+                AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) menuInfo;
+                Task task = (Task) lst_view_all_tasks.getItemAtPosition(adapterContextMenuInfo.position);
+
+                menu.add(0, MenuActionsItem.ACTION_EDIT_ID, 0, MenuActionsItem.ACTION_EDIT);
+                menu.add(0, MenuActionsItem.ACTION_REMOVE_ID, 0, MenuActionsItem.ACTION_REMOVE);
+                if ( statusPending.equals(task.getStatus()) ){
+                    menu.add(0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID, 0, MenuActionsItem.ACTION_SET_STATUS_CONCLUDED);
+                }else {
+                    menu.add(0, MenuActionsItem.ACTION_SET_STATUS_PENDING_ID, 0, MenuActionsItem.ACTION_SET_STATUS_PENDING);
+                }
+//                Toast.makeText(getContext(), "Fui pressionado por um logo tempo", Toast.LENGTH_SHORT)
+//                    .show();
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int menuItemSelectedId = item.getItemId();
+
+        AdapterView.AdapterContextMenuInfo adapterContextMenuInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int position = adapterContextMenuInfo.position;
+        final Task task = taskAdapter.getItem(position);
+
+        switch (menuItemSelectedId){
+            case MenuActionsItem.ACTION_EDIT_ID:
+                Intent intent = new Intent(getContext(), RegisterTaskActivity.class);
+                intent.putExtra("task", task);
+                startActivityForResult(intent, 0);
+                break;
+            case MenuActionsItem.ACTION_REMOVE_ID:
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getContext());
+                alertDialog.setTitle("Atenção");
+                alertDialog.setMessage("Você deseja realmente remover esta task?");
+                alertDialog.setPositiveButton("OK", new RemoveTaskActionAlertDialog(
+                        taskRepository, task, this
+                ));
+                alertDialog.setNegativeButton("Cancelar", null);
+                alertDialog.show();
+                break;
+            case MenuActionsItem.ACTION_SET_STATUS_CONCLUDED_ID:
+                task.setStatus(statusConcluded);
+                try {
+                    taskRepository.update(task);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case MenuActionsItem.ACTION_SET_STATUS_PENDING_ID:
+                task.setStatus(statusPending);
+                try {
+                    taskRepository.update(task);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                break;
+        }
+        this.loadListView();
+
+//        Toast.makeText(getContext(), " Task: " + task.getTitle(), Toast.LENGTH_SHORT)
+//            .show();
+        return super.onContextItemSelected(item);
     }
 }
