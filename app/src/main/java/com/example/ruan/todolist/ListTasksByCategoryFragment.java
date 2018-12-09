@@ -141,7 +141,7 @@ public class ListTasksByCategoryFragment extends Fragment implements AdapterView
 
     @Override
     public void refresh() {
-
+        this.loadListView();
     }
 
     @Override
