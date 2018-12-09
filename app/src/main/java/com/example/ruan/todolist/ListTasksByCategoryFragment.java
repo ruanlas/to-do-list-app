@@ -105,9 +105,9 @@ public class ListTasksByCategoryFragment extends Fragment implements AdapterView
 
         lst_view_tasks_by_category = (ListView)view.findViewById(R.id.lst_view_tasks_by_category);
 //        lst_view_tasks_by_tag.setOnItemClickListener(this);
+        registerForContextMenu(lst_view_tasks_by_category);
         spn_category_filter = (Spinner)view.findViewById(R.id.spn_category_filter);
         spn_category_filter.setOnItemSelectedListener(this);
-        registerForContextMenu(lst_view_tasks_by_category);
 
         toDoListDBHelper = new ToDoListDBHelper(getContext());
         try {
@@ -123,7 +123,7 @@ public class ListTasksByCategoryFragment extends Fragment implements AdapterView
 
         try {
             List<Category> categoryList = categoryRepository.queryForAll();
-            CategoryAdapter categoryAdapter = new CategoryAdapter(getContext(), R.layout.tag_spinner_layout, categoryList);
+            CategoryAdapter categoryAdapter = new CategoryAdapter(getContext(), R.layout.category_spinner_layout, categoryList);
             spn_category_filter.setAdapter(categoryAdapter);
         } catch (SQLException e) {
             e.printStackTrace();
