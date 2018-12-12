@@ -27,7 +27,9 @@ import com.example.ruan.todolist.repository.TagsRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
 import java.sql.SQLException;
+import java.time.Month;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -148,8 +150,14 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void saveTask(){
+//        // 01/12/2018
+//        Date date = new Date(2018 - 1900, 11, 1);
+//            Toast.makeText(this, date.toString(), Toast.LENGTH_LONG)
+//                    .show();
+
         if (newTask){
             task = new Task();
+            task.setCreatedAt(new Date());
             Status statusPending = null;
 
             try {

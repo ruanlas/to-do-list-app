@@ -5,6 +5,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @DatabaseTable(tableName = "task", daoClass = TaskRepository.class)
 public class Task implements Serializable {
@@ -26,6 +27,16 @@ public class Task implements Serializable {
 
     @DatabaseField(columnName = "status_id", foreign = true, foreignAutoRefresh = true)
     private transient Status status;
+
+    @DatabaseField(columnName = "created_at")
+    private Date createdAt;
+
+    @DatabaseField(columnName = "end_date")
+    private Date endDate;
+
+    public Task(){
+        this.createdAt = new Date();
+    }
 
     public int getId() {
         return id;
@@ -73,5 +84,21 @@ public class Task implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 }
