@@ -1,21 +1,22 @@
 package com.example.ruan.todolist;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
-import com.androidbuts.multispinnerfilter.MultiSpinner;
-import com.androidbuts.multispinnerfilter.MultiSpinnerListener;
 import com.example.ruan.todolist.adapters.CategoryAdapter;
 import com.example.ruan.todolist.adapters.TagAdapter;
+import com.example.ruan.todolist.components.DateHelper;
+import com.example.ruan.todolist.components.DatePicker;
+import com.example.ruan.todolist.components.Mask;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
 import com.example.ruan.todolist.entity.Category;
 import com.example.ruan.todolist.entity.Status;
@@ -27,15 +28,17 @@ import com.example.ruan.todolist.repository.TagsRepository;
 import com.example.ruan.todolist.repository.TaskRepository;
 
 import java.sql.SQLException;
-import java.time.Month;
-import java.util.ArrayList;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 public class RegisterTaskActivity extends AppCompatActivity implements View.OnClickListener {
+    static final int DATE_DIALOG_ID = 0;
 
-    private EditText edt_title, edt_description;
+    private EditText edt_title, edt_description, edt_date;
     private Spinner spn_category, spn_tags;
 //    private MultiSpinner spn_tags;
     private ToDoListDBHelper toDoListDBHelper;
@@ -60,6 +63,14 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
         edt_description = (EditText)findViewById(R.id.edt_description);
         spn_tags = (Spinner)findViewById(R.id.spn_tags);
         spn_category = (Spinner)findViewById(R.id.spn_category);
+
+
+        edt_date = (EditText)findViewById(R.id.edt_date);
+        edt_date.addTextChangedListener(Mask.insert("##/##/####", edt_date));
+        edt_date.setOnClickListener(this);
+        ImageButton btn_date = (ImageButton)findViewById(R.id.btn_date);
+        btn_date.setOnClickListener(this);
+
 
 
         try {
@@ -112,6 +123,10 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
             int positionTag = tagAdapter.getPosition(task.getTags());
             spn_tags.setSelection(positionTag);
 
+            edt_date.setText(
+                    DateHelper.convertDateToStringPTBR(task.getEndDate())
+            );
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -141,12 +156,56 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
 //                Toast.makeText(v.getContext(), category.getCategoryName(), Toast.LENGTH_SHORT)
 //                Toast.makeText(v.getContext(), tags.getTagName(), Toast.LENGTH_SHORT)
 //                        .show();
-                saveTask();
-                finish();
+                if ( fieldsIsValid() ){
+                    saveTask();
+                }
+                break;
+            case R.id.edt_date:
+            case R.id.btn_date:
+                showDialog(DATE_DIALOG_ID);
                 break;
             default:
                 break;
         }
+    }
+
+    private boolean fieldsIsValid()
+    {
+        if (
+                edt_title.getText().toString().isEmpty() ||
+                        edt_title.getText().toString().trim().isEmpty()
+                ){
+            Toast.makeText(this, "O campo título não pode estar vazio", Toast.LENGTH_LONG)
+                    .show();
+            edt_title.requestFocus();
+            return false;
+        }
+        if (
+                edt_description.getText().toString().isEmpty() ||
+                        edt_description.getText().toString().trim().isEmpty()
+                ){
+            Toast.makeText(this, "O campo descrição não pode estar vazio", Toast.LENGTH_LONG)
+                    .show();
+            edt_description.requestFocus();
+            return false;
+        }
+        if (
+                edt_date.getText().toString().isEmpty() ||
+                        edt_date.getText().toString().trim().isEmpty()
+                ){
+            Toast.makeText(this, "O campo data não pode estar vazio", Toast.LENGTH_LONG)
+                    .show();
+            edt_date.requestFocus();
+            return false;
+        }
+        if ( !DateHelper.dateIsValid(edt_date.getText().toString()) ){
+            Toast.makeText(this, "A data está com formato inválido", Toast.LENGTH_LONG)
+                    .show();
+            edt_date.requestFocus();
+            return false;
+        }
+
+        return true;
     }
 
     private void saveTask(){
@@ -169,6 +228,9 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
         }
         Tags tags = (Tags)spn_tags.getSelectedItem();
         Category category = (Category)spn_category.getSelectedItem();
+        task.setEndDate(
+                DateHelper.convertStringPTBRToData(edt_date.getText().toString())
+        );
         task.setTitle(edt_title.getText().toString());
         task.setDescription(edt_description.getText().toString());
         task.setTags(tags);
@@ -183,8 +245,35 @@ public class RegisterTaskActivity extends AppCompatActivity implements View.OnCl
             }
             Toast.makeText(this, "Task salva!", Toast.LENGTH_SHORT)
                 .show();
+            finish();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected Dialog onCreateDialog(int id) {
+//        return super.onCreateDialog(id);
+        Calendar calendario = Calendar.getInstance();
+
+        int ano = calendario.get(Calendar.YEAR);
+        int mes = calendario.get(Calendar.MONTH);
+        int dia = calendario.get(Calendar.DAY_OF_MONTH);
+
+        switch (id) {
+            case DATE_DIALOG_ID:
+                if (newTask){
+                    return new DatePickerDialog(this, new DatePicker(this, edt_date), ano, mes,
+                            dia);
+                }else {
+                    return new DatePickerDialog(this, new DatePicker(this, edt_date),
+                            (task.getEndDate().getYear() + 1900),
+                            task.getEndDate().getMonth(),
+                            task.getEndDate().getDate()
+                    );
+                }
+        }
+        return null;
+    }
+
 }

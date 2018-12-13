@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.example.ruan.todolist.R;
+import com.example.ruan.todolist.components.DateHelper;
 import com.example.ruan.todolist.entity.Task;
 
 import java.util.List;
@@ -45,6 +46,9 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             itensHolder.txt_task_description = (TextView)convertView.findViewById(R.id.txt_task_description);
             itensHolder.txt_task_title = (TextView)convertView.findViewById(R.id.txt_task_title);
             itensHolder.txt_task_status = (TextView)convertView.findViewById(R.id.txt_task_status);
+            itensHolder.txt_task_category = (TextView)convertView.findViewById(R.id.txt_task_category);
+            itensHolder.txt_task_tag = (TextView)convertView.findViewById(R.id.txt_task_tag);
+            itensHolder.txt_task_date = (TextView)convertView.findViewById(R.id.txt_task_date);
             convertView.setTag(itensHolder);
         }else {
             itensHolder = (ItensHolder)convertView.getTag();
@@ -53,10 +57,16 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         itensHolder.txt_task_title.setText(taskList.get(position).getTitle());
         itensHolder.txt_task_description.setText(taskList.get(position).getDescription());
         itensHolder.txt_task_status.setText("[ " + taskList.get(position).getStatus().getStatusName() + " ]");
+        itensHolder.txt_task_tag.setText("[ " + taskList.get(position).getTags().getTagName() + " ]");
+        itensHolder.txt_task_category.setText(taskList.get(position).getCategory().getCategoryName());
+        itensHolder.txt_task_date.setText(DateHelper.convertDateToStringPTBRWithDivisor(
+                taskList.get(position).getEndDate()
+        ));
         return convertView;
     }
 
     private static class ItensHolder{
-        public TextView txt_task_title, txt_task_description, txt_task_status;
+        public TextView txt_task_title, txt_task_description, txt_task_status,
+                txt_task_tag, txt_task_category, txt_task_date;
     }
 }

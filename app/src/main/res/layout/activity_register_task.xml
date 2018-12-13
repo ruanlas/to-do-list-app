@@ -59,6 +59,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="100">
+
+                <EditText
+                    android:id="@+id/edt_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:inputType="date"
+                    android:layout_weight="70"/>
+
+                <ImageButton
+                    android:id="@+id/btn_date"
+                    android:src="@android:drawable/ic_menu_day"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="30"/>
+            </LinearLayout>
+
+
             <Button
                 android:id="@+id/btn_save_task"
                 android:layout_width="wrap_content"

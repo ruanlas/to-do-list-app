@@ -16,7 +16,7 @@ import java.sql.SQLException;
 public class ToDoListDBHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "to_do_list_db";
-    private static final int DATABASE_VERSION = 3;
+    private static final int DATABASE_VERSION = 4;
 
     public ToDoListDBHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
