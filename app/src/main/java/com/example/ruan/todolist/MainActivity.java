@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-
+        if (id == R.id.action_refresh) {
+            refreshFragments();
             return true;
         }
 
@@ -153,8 +153,13 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 //        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 0){
-            FragmentRefreshInterface currentFragment = (FragmentRefreshInterface)fragmentManager.findFragmentById(R.id.fragment_content);
-            currentFragment.refresh();
+            refreshFragments();
         }
+    }
+
+    private void refreshFragments()
+    {
+        FragmentRefreshInterface currentFragment = (FragmentRefreshInterface)fragmentManager.findFragmentById(R.id.fragment_content);
+        currentFragment.refresh();
     }
 }
