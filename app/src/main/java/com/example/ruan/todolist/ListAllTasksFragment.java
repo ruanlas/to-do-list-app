@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.example.ruan.todolist.adapters.TaskAdapter;
 import com.example.ruan.todolist.database.ToDoListDBHelper;
@@ -97,7 +96,7 @@ public class ListAllTasksFragment extends Fragment implements AdapterView.OnItem
 
         lst_view_all_tasks = (ListView)view.findViewById(R.id.lst_view_all_tasks);
 //        lst_view_all_tasks.setOnItemClickListener(this);
-        registerForContextMenu(lst_view_all_tasks);
+        registerForContextMenu(lst_view_all_tasks); // esta opção permite adicionar o menu de opções em cada item da lista
 
         toDoListDBHelper = new ToDoListDBHelper(getContext());
         try {
